@@ -20,6 +20,22 @@ const districtRoutes = require("./api/v1/routes/district.route");
 //   methods: ["POST"],
 //   optionsSuccessStatus: 200,
 // };
+const Sequelize = require("sequelize");
+let sequelize = new Sequelize(
+  {
+    username: "postgres",
+    password: "Rs@2022",
+    database: "bokdb",
+    host: "10.233.121.1",
+    dialect: "postgres",
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    }
+  }
+);
 
 const app = express();
 
@@ -36,6 +52,11 @@ app.use("/api/v1/login", loginRoutes);
 app.use("/api/v1/admin/users", userRoutes);
 app.use("/api/v1/provinces", provinceRoutes);
 app.use("/api/v1/districts", districtRoutes);
+app.use("/test", async function(req, res, next) {
+  let list = await sequelize.query("SELECT * FROM domain");
+  console.log(list);
+  res.send(list)
+})
 // ----- Route End ----- //
 
 app.use((req, res, next) => {
@@ -54,7 +75,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 const server = http.createServer(app);
 
